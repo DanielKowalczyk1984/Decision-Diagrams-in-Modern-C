@@ -8,7 +8,17 @@ set(exe_sources
 )
 
 set(headers
-    include/ModernDD/tmp.hpp
+    include/ModernDD/NodeBase.hpp  
+    include/ModernDD/NodeBddBuilder.hpp
+    include/ModernDD/NodeBddDumper.hpp
+    include/ModernDD/NodeBddEval.hpp
+    include/ModernDD/NodeBddReducer.hpp
+    include/ModernDD/NodeBddSpec.hpp
+    include/ModernDD/NodeBddStructure.hpp
+    include/ModernDD/NodeBddSweeper.hpp
+    include/ModernDD/NodeBddTable.hpp
+    include/ModernDD/NodeBranchId.hpp
+    include/ModernDD/NodeId.hpp
 )
 
 set(test_sources

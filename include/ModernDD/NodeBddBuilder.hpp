@@ -76,9 +76,10 @@ class BuilderBase {
 
     template <typename SPEC>
     struct Hasher {
+        private:
         SPEC const&  spec;
         size_t const level;
-
+        public:
         Hasher(SPEC const& _spec, size_t _level) : spec(_spec), level(_level) {}
 
         size_t operator()(SpecNode const* p) const {
@@ -199,7 +200,7 @@ class DdBuilder : BuilderBase {
             Hasher<Spec> hasher(spec, i);
             UniqTable    uniq(spec_nodes.size() * 2, hasher, hasher);
 
-            for (auto p : spec_nodes) {
+            for (auto *p : spec_nodes) {
                 // SpecNode*& p0 = uniq.add(p);
                 auto aux = uniq.insert(p);
 
@@ -397,7 +398,7 @@ class ZddSubsetter : BuilderBase {
 
         if (n <= 0 || k <= 0) {
             assert(n == 0 || k == 0 || (n == -1 && k == -1));
-            root = NodeId(0, n != 0 && k != 0);
+            root = NodeId(0, static_cast<size_t>(n != 0 && k != 0));
             n = 0;
         } else {
             assert(n == k);
@@ -449,7 +450,7 @@ class ZddSubsetter : BuilderBase {
             if (n >= 2) {
                 UniqTable uniq(n * 2, hasher, hasher);
 
-                for (auto p : list) {
+                for (auto *p : list) {
                     auto aux = uniq.insert(p);
                     // SpecNode*& p0 = uniq.add(p);
 
@@ -487,7 +488,7 @@ class ZddSubsetter : BuilderBase {
         for (size_t j = 0; j < m; ++j) {
             auto& list = work[i][j];
 
-            for (auto p : list) {
+            for (auto *p : list) {
                 auto& q = output[i][jj];
 
                 if (nodeId(p) == 1) {

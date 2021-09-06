@@ -25,7 +25,7 @@
 #ifndef NODE_BDD_SPEC_HPP
 #define NODE_BDD_SPEC_HPP
 
-#include <stdint.h>               // for uint16_t
+#include <cstdint>               // for uint16_t
 #include <cassert>                // for assert
 #include <cstddef>                // for size_t
 #include <iostream>               // for ostream, operator<<, basic_ostream:...
@@ -87,7 +87,6 @@ class DdSpecBase {
     // return DepthFirstSearcher<S>(entity()).findOneInstance();
     // }
 
-   public:
     /**
      * Dumps the node table in Graphviz (dot) format.
      * @param os the output stream.

@@ -79,7 +79,7 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
         auto&  table = *diagram;
         NodeId f(1);
 
-        for (int i = 1; i <= n; ++i) {
+        for (auto i = 1UL; i <= n; ++i) {
             table.initRow(i, 1);
             for (auto& it : table[i][0]) {
                 it = f;
@@ -106,7 +106,7 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
         int                n = zc.initialize(root_);
 
         if (n > 0) {
-            for (size_t i = n; i > 0; --i) {
+            for (size_t i = n; i > 0UL; --i) {
                 zc.construct(i);
             }
         }
@@ -163,7 +163,7 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
      * @param b branch number.
      * @return child node ID.
      */
-    [[nodiscard]] NodeId child(NodeId f, int b) const {
+    [[nodiscard]] NodeId child(NodeId f, size_t b) const {
         return diagram->child(f, b);
     }
 
@@ -296,7 +296,6 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
         }
     }
 
-   public:
     // /**
     //  * Transforms a BDD into a ZDD.
     //  * @param numVars the number of variables.
@@ -449,7 +448,6 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
         }
         // }
 
-        return;
     }
 
     /**
@@ -457,9 +455,11 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
      */
     class const_iterator {
         struct Selection {
+            private:
             NodeId node{};
             bool   val{false};
 
+            public:
             Selection() = default;
 
             Selection(NodeId _node, bool _val) : node(_node), val(_val) {}

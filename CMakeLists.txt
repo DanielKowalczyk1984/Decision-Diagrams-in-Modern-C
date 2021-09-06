@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.15)
 #
 
 project(
-  "DecisionDiagramsModernC++"
+  "ModernDD"
   VERSION 0.1.0
   LANGUAGES CXX
 )
@@ -203,7 +203,8 @@ verbose_message("Project is now aliased as ${PROJECT_NAME}::${PROJECT_NAME}.\n")
 # Format the project using the `clang-format` target (i.e: cmake --build build --target clang-format)
 #
 
-add_clang_format_target()
+# set(${PROJECT_NAME}_CLANG_FORMAT_BINARY clang-format-modernDD)
+# add_clang_format_target()
 
 #
 # Install library for easy downstream inclusion
@@ -281,46 +282,46 @@ write_basic_package_version_file(
   SameMajorVersion
 )
 
-configure_package_config_file(
-  ${CMAKE_CURRENT_LIST_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-  INSTALL_DESTINATION
-  ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-)
+# configure_package_config_file(
+#   ${CMAKE_CURRENT_LIST_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
+#   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+#   INSTALL_DESTINATION
+#   ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+# )
 
-install(
-  FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-  DESTINATION
-  ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-)
+# install(
+#   FILES
+#   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+#   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+#   DESTINATION
+#   ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+# )
 
-#
-# Generate export header if specified
-#
+# #
+# # Generate export header if specified
+# #
 
-if(${PROJECT_NAME}_GENERATE_EXPORT_HEADER)
-  include(GenerateExportHeader)
-  generate_export_header(${PROJECT_NAME})
-  install(
-    FILES
-    ${PROJECT_BINARY_DIR}/${PROJECT_NAME_LOWERCASE}_export.h
-    DESTINATION
-    include
-  )
+# if(${PROJECT_NAME}_GENERATE_EXPORT_HEADER)
+#   include(GenerateExportHeader)
+#   generate_export_header(${PROJECT_NAME})
+#   install(
+#     FILES
+#     ${PROJECT_BINARY_DIR}/${PROJECT_NAME_LOWERCASE}_export.h
+#     DESTINATION
+#     include
+#   )
 
-  message(STATUS "Generated the export header `${PROJECT_NAME_LOWERCASE}_export.h` and installed it.")
-endif()
+#   message(STATUS "Generated the export header `${PROJECT_NAME_LOWERCASE}_export.h` and installed it.")
+# endif()
 
-message(STATUS "Finished building requirements for installing the package.\n")
+# message(STATUS "Finished building requirements for installing the package.\n")
 
-#
-# Unit testing setup
-#
+# #
+# # Unit testing setup
+# #
 
-if(${PROJECT_NAME}_ENABLE_UNIT_TESTING)
-  enable_testing()
-  message(STATUS "Build unit tests for the project. Tests should always be found in the test folder\n")
-  add_subdirectory(test)
-endif()
+# if(${PROJECT_NAME}_ENABLE_UNIT_TESTING)
+#   enable_testing()
+#   message(STATUS "Build unit tests for the project. Tests should always be found in the test folder\n")
+#   add_subdirectory(test)
+# endif()

@@ -19,7 +19,7 @@ function(add_clang_format_target)
 
     if(${PROJECT_NAME}_CLANG_FORMAT_BINARY)
 			if(${PROJECT_NAME}_BUILD_EXECUTABLE)
-				add_custom_target(clang-format
+				add_custom_target(clang-format-moderdDD
 						COMMAND ${${PROJECT_NAME}_CLANG_FORMAT_BINARY}
 						-i ${exe_sources} ${headers}
 						WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
