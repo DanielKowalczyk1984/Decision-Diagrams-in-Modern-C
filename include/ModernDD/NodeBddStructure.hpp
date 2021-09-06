@@ -226,26 +226,26 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
             }
         }
 
-        for (size_t i = 1; i <= n; ++i) {
-            size_t m = (*diagram)[i].size();
+        for (auto i = 1UL; i <= n; ++i) {
+            auto m = (*diagram)[i].size();
             uniq.initialize(m * 2);
 
-            for (size_t j = 0; j < m; ++j) {
+            for (auto j = 0; j < m; ++j) {
                 uniq[(*diagram)[i][j]] = j;
             }
 
-            size_t om = (*o.diagram)[i].size();
+            auto om = (*o.diagram)[i].size();
             equiv[i].resize(om);
 
-            for (size_t j = 0; j < om; ++j) {
+            for (auto j = 0UL; j < om; ++j) {
                 InitializedNode node;
 
-                for (int b = 0; b < 2; ++b) {
+                for (auto b = 0UL; b < 2; ++b) {
                     NodeId f = (*o.diagram)[i][j][b];
                     node[b] = equiv[f.row()][f.col()];
                 }
 
-                size_t* p = uniq.getValue(node);
+                auto* p = uniq.getValue(node);
                 equiv[i][j] = NodeId(i, (p != nullptr) ? *p : m);
             }
         }
