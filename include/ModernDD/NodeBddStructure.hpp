@@ -106,7 +106,7 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
         int                n = zc.initialize(root_);
 
         if (n > 0) {
-            for (size_t i = n; i > 0UL; --i) {
+            for (auto i = size_t(n); i > 0UL; --i) {
                 zc.construct(i);
             }
         }
@@ -216,8 +216,8 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
             return o.operator==(*this);
         }
 
-        MyHashMap<InitializedNode, size_t> uniq;
-        DataTable<NodeId>                  equiv(n + 1);
+        MyHashMap<NodeBase, size_t> uniq;
+        DataTable<NodeId>           equiv(n + 1);
         {
             size_t om = (*o.diagram)[0].size();
             equiv[0].resize(om);
@@ -238,7 +238,7 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
             equiv[i].resize(om);
 
             for (auto j = 0UL; j < om; ++j) {
-                InitializedNode node;
+                NodeBase node;
 
                 for (auto b = 0UL; b < 2; ++b) {
                     NodeId f = (*o.diagram)[i][j][b];
@@ -447,7 +447,6 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
             evaluator.evalNode(it);
         }
         // }
-
     }
 
     /**
@@ -455,11 +454,11 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
      */
     class const_iterator {
         struct Selection {
-            private:
+           private:
             NodeId node{};
             bool   val{false};
 
-            public:
+           public:
             Selection() = default;
 
             Selection(NodeId _node, bool _val) : node(_node), val(_val) {}
@@ -572,7 +571,7 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
      */
     size_t getRoot(NodeId& f) const {
         f = root_;
-        return (f == 1) ? -1 : f.row();
+        return (f == 1) ? size_t(-1) : f.row();
     }
 
     /**

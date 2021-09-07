@@ -25,15 +25,25 @@
 #ifndef NODE_BDD_SPEC_HPP
 #define NODE_BDD_SPEC_HPP
 
-#include <cstdint>               // for uint16_t
-#include <cassert>                // for assert
-#include <cstddef>                // for size_t
-#include <iostream>               // for ostream, operator<<, basic_ostream:...
-#include <new>                    // for operator new
+#include <cassert>   // for assert
+#include <cstddef>   // for size_t
+#include <cstdint>   // for uint16_t
+#include <iostream>  // for ostream, operator<<, basic_ostream:...
+#include <new>       // for operator new
+#include <range/v3/algorithm/copy.hpp>
+#include <range/v3/algorithm/equal.hpp>
+#include <range/v3/numeric/accumulate.hpp>
+#include <range/v3/range_fwd.hpp>
+#include <range/v3/to_container.hpp>
+#include <range/v3/view/drop.hpp>
+#include <range/v3/view/join.hpp>
+#include <range/v3/view/transform.hpp>
 #include <range/v3/view/zip.hpp>  // for zip
-#include <stdexcept>              // for runtime_error
-#include <string>                 // for allocator, string
-#include "NodeBddDumper.hpp"      // for DdDumper
+#include <span>
+#include <stdexcept>  // for runtime_error
+#include <string>     // for allocator, string
+
+#include "NodeBddDumper.hpp"  // for DdDumper
 
 /**
  * Base class of DD specs.
@@ -397,11 +407,15 @@ class PodArrayDdSpec : public DdSpecBase<S, AR> {
 
     void get_copy(void* to, void const* from) {
         Word const* pa = static_cast<Word const*>(from);
-        Word const* pz = pa + dataWords;
-        Word*       qa = static_cast<Word*>(to);
-        while (pa != pz) {
-            *qa++ = *pa++;
-        }
+        // Word const* pz = pa + dataWords;
+        Word* qa = static_cast<Word*>(to);
+        auto  aux_p = std::span<Word const>{pa, dataWords};
+        auto  aux_q = std::span<Word>{qa, dataWords};
+        ranges::copy(aux_p.begin(), aux_p.end(), aux_q.begin());
+        // while (pa != pz)
+        // {
+        //   *qa++ = *pa++;
+        // }
     }
 
     int mergeStates([[maybe_unused]] T* a1, [[maybe_unused]] T* a2) {
@@ -418,13 +432,19 @@ class PodArrayDdSpec : public DdSpecBase<S, AR> {
 
     size_t hash_code(void const* p, [[maybe_unused]] int level) const {
         Word const* pa = static_cast<Word const*>(p);
-        Word const* pz = pa + dataWords;
-        size_t      h = 0;
-        while (pa != pz) {
-            h += *pa++;
-            h *= HASH_CONST_POD_ARRAY;
-        }
-        return h;
+        // Word const* pz = pa + dataWords;
+        std::span<Word const> aux{pa, size_t(dataWords)};
+        // size_t h = 0;
+        return ranges::accumulate(aux, 0UL, [](auto a, auto b) {
+            auto tmp{a + b};
+            tmp *= HASH_CONST_POD_ARRAY;
+            return tmp;
+        });
+        // while (pa != pz) {
+        //     h += *pa++;
+        //     h *= HASH_CONST_POD_ARRAY;
+        // }
+        // return h;
     }
 
     bool equal_to(void const*          p,
@@ -432,24 +452,26 @@ class PodArrayDdSpec : public DdSpecBase<S, AR> {
                   [[maybe_unused]] int level) const {
         Word const* pa = static_cast<Word const*>(p);
         Word const* qa = static_cast<Word const*>(q);
-        Word const* pz = pa + dataWords;
-        while (pa != pz) {
-            if (*pa++ != *qa++) {
-                return false;
-            }
-        }
-        return true;
+        // Word const* pz = pa + dataWords;
+        auto aux_p = std::span<Word const>(pa, size_t(dataWords));
+        auto aux_q = std::span<Word const>(qa, size_t(dataWords));
+        // while (pa != pz) {
+        //     if (*pa++ != *qa++) {
+        //         return false;
+        //     }
+        // }
+        // return true;
+        return ranges::equal(aux_p, aux_q);
     }
 
     void printState(std::ostream& os, State const* a) const {
-        os << "[";
-        for (int i = 0; i < arraySize; ++i) {
-            if (i > 0) {
-                os << ",";
-            }
-            os << a[i];
-        }
-        os << "]";
+        auto aux = std::span<State const>(a, size_t(arraySize));
+        auto joined = aux | ranges::views::transform([](auto& tmp) {
+                          return std::to_string(tmp);
+                      }) |
+                      ranges::views::join(", ");
+
+        os << "[" << ranges::to_<std::string>(joined) << os << "]\n";
     }
 
     void printStateAtLevel(std::ostream&        os,
@@ -506,13 +528,15 @@ class HybridDdSpec : public DdSpecBase<S, AR> {
         return *static_cast<S_State const*>(p);
     }
 
-    static A_State* a_state(void* p) {
-        return reinterpret_cast<A_State*>(static_cast<Word*>(p) + S_WORDS);
+    A_State* a_state(void* p) {
+        auto aux = std::span<Word>{static_cast<Word*>(p), dataWords};
+        return reinterpret_cast<A_State*>(aux.subspan(S_WORDS).data());
     }
 
-    static A_State const* a_state(void const* p) {
-        return reinterpret_cast<A_State const*>(static_cast<Word const*>(p) +
-                                                S_WORDS);
+    A_State const* a_state(void const* p) {
+        auto aux =
+            std::span<Word const>{static_cast<Word const*>(p), dataWords};
+        return reinterpret_cast<A_State const*>(aux.subspan(S_WORDS).data());
     }
 
    protected:
@@ -548,13 +572,19 @@ class HybridDdSpec : public DdSpecBase<S, AR> {
         this->entity().getCopy(to, s_state(from));
         auto const* pa = static_cast<Word const*>(from);
 
-        auto const* pz = pa + dataWords;
-        auto*       qa = static_cast<Word*>(to);
-        pa += S_WORDS;
-        qa += S_WORDS;
-        while (pa != pz) {
-            *qa++ = *pa++;
-        }
+        // auto const* pz = pa + dataWords;
+        auto* qa = static_cast<Word*>(to);
+        // pa += S_WORDS;
+        // qa += S_WORDS;
+        auto aux_p = std::span<Word const>{pa, dataWords} |
+                     ranges::views::drop(size_t(S_WORDS));
+        auto aux_q = std::span<Word>{qa, dataWords} |
+                     ranges::views::drop(size_t(S_WORDS));
+        ranges::copy(aux_p.begin(), aux_p.end(), aux_q.end());
+        // while (pa != pz)
+        // {
+        //   *qa++ = *pa++;
+        // }
     }
 
     int mergeStates([[maybe_unused]] S_State& s1,
@@ -583,13 +613,21 @@ class HybridDdSpec : public DdSpecBase<S, AR> {
         size_t h = this->entity().hashCodeAtLevel(s_state(p), level);
         h *= HASH_HYBRID_SPEC1;
         Word const* pa = static_cast<Word const*>(p);
-        Word const* pz = pa + dataWords;
-        pa += S_WORDS;
-        while (pa != pz) {
-            h += *pa++;
-            h *= HASH_HYBRID_SPEC2;
-        }
-        return h;
+        // Word const* pz = pa + dataWords;
+        // pa += S_WORDS;
+        // while (pa != pz)
+        // {
+        //   h += *pa++;
+        //   h *= HASH_HYBRID_SPEC2;
+        // }
+
+        std::span<Word const> aux{pa, dataWords};
+        return ranges::accumulate(aux | ranges::views::drop(size_t(S_WORDS)), h,
+                                  [](auto a, auto b) {
+                                      auto tmp{a + b};
+                                      tmp *= HASH_HYBRID_SPEC2;
+                                      return tmp;
+                                  });
     }
 
     bool equalTo(S_State const& s1, S_State const& s2) const {
@@ -608,28 +646,45 @@ class HybridDdSpec : public DdSpecBase<S, AR> {
         }
         Word const* pa = static_cast<Word const*>(p);
         Word const* qa = static_cast<Word const*>(q);
-        Word const* pz = pa + dataWords;
-        pa += S_WORDS;
-        qa += S_WORDS;
-        while (pa != pz) {
-            if (*pa++ != *qa++) {
-                return false;
-            }
-        }
-        return true;
+        auto        aux_p =
+            std::span{pa, dataWords} | ranges::views::drop(size_t(S_WORDS));
+        auto aux_q =
+            std::span{qa, dataWords} | ranges::views::drop(size_t(S_WORDS));
+        // Word const* pz = pa + dataWords;
+        // pa += S_WORDS;
+        // qa += S_WORDS;
+        // while (pa != pz)
+        // {
+        //   if (*pa++ != *qa++)
+        //   {
+        //     return false;
+        //   }
+        // }
+        return ranges::equal(aux_p, aux_q);
     }
 
     void printState(std::ostream&  os,
                     S_State const& s,
                     A_State const* a) const {
-        os << "[" << s << ":";
-        for (int i = 0; i < arraySize; ++i) {
-            if (i > 0) {
-                os << ",";
-            }
-            os << a[i];
-        }
-        os << "]";
+        auto aux = std::span<A_State const>(a, size_t(arraySize));
+        auto joined = aux | ranges::views::transform([](auto& tmp) {
+                          return std::to_string(tmp);
+                      }) |
+                      ranges::views::join(", ");
+
+        os << "[" << s << ":" << ranges::to_<std::string>(joined) << os
+           << "]\n";
+
+        // os << "[" << s << ":";
+        // for (int i = 0; i < arraySize; ++i)
+        // {
+        //   if (i > 0)
+        //   {
+        //     os << ",";
+        //   }
+        //   os << a[i];
+        // }
+        // os << "]";
     }
 
     void printStateAtLevel(std::ostream&        os,

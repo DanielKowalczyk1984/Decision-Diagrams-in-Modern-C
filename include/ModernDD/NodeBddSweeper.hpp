@@ -156,7 +156,7 @@ class DdSweeper {
             diagram[i].resize(jj);
         }
 
-        if (oneSrcPtr) {
+        if (oneSrcPtr != nullptr) {
             for (auto& nbi : *oneSrcPtr) {
                 if (nbi.row >= k) {
                     NodeId f = newId[nbi.row][nbi.col];

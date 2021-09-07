@@ -1,10 +1,12 @@
 #ifndef NODE_BDD_REDUCER_HPP
 #define NODE_BDD_REDUCER_HPP
 
-#include <cassert>               // for assert
-#include <cstddef>               // for size_t
-#include <ext/alloc_traits.h>    // for __alloc_traits<>::value_type
-#include <memory>                // for allocator_traits<>::value_type
+#include <cassert>             // for assert
+#include <cstddef>             // for size_t
+#include <ext/alloc_traits.h>  // for __alloc_traits<>::value_type
+#include <memory>              // for allocator_traits<>::value_type
+#include <range/v3/view/enumerate.hpp>
+#include <range/v3/view/reverse.hpp>
 #include <span>                  // for span
 #include <unordered_set>         // for unordered_set
 #include <vector>                // for vector
@@ -120,9 +122,11 @@ class DdReducer {
         std::vector<NodeId>& newId = newIdTable[i];
         newId.resize(m);
 
-        for (size_t j = m - 1; j + 1 > 0; --j) {
-            NodeId& f0 = input[i][j][0];
-            NodeId& f1 = input[i][j][1];
+        // for (size_t j = m - 1; j + 1 > 0; --j) {
+        for (auto&& [j, f] :
+             input[i] | ranges::views::enumerate | ranges::views::reverse) {
+            auto& f0 = f[0];
+            auto& f1 = f[1];
 
             if (f0.row() != 0) {
                 f0 = newIdTable[f0.row()][f0.col()];
@@ -153,29 +157,29 @@ class DdReducer {
                 continue;
             }
 
-            NodeId& g0 = input[i][j][0];
+            auto& g0 = input[i][j][0];
             assert(newId[j].row() == counter + 1);
             newId[j] = NodeId(counter, mm++, g0.hasEmpty());
         }
 
-        std::vector<size_t> const& levels = input.lowerLevels(counter);
-        for (auto& t : levels) {
+        auto const& levels = input.lowerLevels(counter);
+        for (const auto& t : levels) {
             input[t].clear();
         }
 
-        if (mm > 0u) {
+        if (mm > 0U) {
             output.initRow(counter, mm);
             std::span<T> nt{output[counter].data(), output[counter].size()};
 
             for (size_t j = 0; j < m; ++j) {
                 // NodeId const& f0 = tt[j].branch[0];
-                NodeId const& f1 = input[i][j][1];
+                auto const& f1 = input[i][j][1];
 
                 if (ZDD && f1 == 0) {  // forwarded
                     assert(newId[j].row() < counter);
                 } else {
                     assert(newId[j].row() == counter);
-                    size_t k = newId[j].col();
+                    auto k = newId[j].col();
                     nt[k] = input[i][j];
                     nt[k].set_node_id_label(newId[j]);
                     if (nt[k].get_ptr_node_id() != 0) {
@@ -278,7 +282,7 @@ class DdReducer {
             input[t].clear();
         }
 
-        if (mm > 0u) {
+        if (mm > 0U) {
             output.initRow(i, mm);
             std::span<T> nt{output[i].data(), output[i].size()};
 
@@ -322,15 +326,15 @@ class DdReducer {
             std::unordered_set<T const*> uniq(m * 2, MyHashDefault<T const*>(),
                                               MyHashDefault<T const*>());
 
-            for (size_t j = 0; j < m; ++j) {
+            for (auto j = 0UL; j < m; ++j) {
                 auto* const p0 = input[i].data();
                 auto&       f = input[i][j];
 
                 // make f canonical
-                NodeId& f0 = f[0];
+                auto& f0 = f[0];
                 f0 = newIdTable[f0.row()][f0.col()];
-                NodeId deletable = BDD ? f0 : 0;
-                bool   del = BDD || ZDD || (f0 == 0);
+                auto deletable = BDD ? f0 : 0;
+                auto del = BDD || ZDD || (f0 == 0);
                 for (int b = 1; b < 2; ++b) {
                     NodeId& ff = f[b];
                     ff = newIdTable[ff.row()][ff.col()];
@@ -354,7 +358,7 @@ class DdReducer {
         }
 
         std::vector<int> const& levels = input.lowerLevels(i);
-        for (auto& t : levels) {
+        for (const auto& t : levels) {
             newIdTable[t].clear();
         }
 

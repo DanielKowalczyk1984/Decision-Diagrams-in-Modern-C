@@ -83,7 +83,7 @@ class NodeId {
 
     friend std::ostream& operator<<(std::ostream& os, NodeId const& o) {
         os << o.row() << ":" << o.col();
-        if (o.code_ & NODE_ATTR_MASK) {
+        if ((o.code_ & NODE_ATTR_MASK) != 0U) {
             os << "+";
         }
         return os;

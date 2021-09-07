@@ -351,7 +351,7 @@ class NodeTableEntity : public data_table_node<T> {
 
         bool terminal1 = false;
 
-        for (int i = this->numRows() - 1; i > 0; --i) {
+        for (auto i = this->numRows() - 1; i > 0; --i) {
             size_t m = (*this)[i].size();
 
             for (size_t j = 0; j < m; ++j) {
@@ -416,9 +416,13 @@ class NodeTableEntity : public data_table_node<T> {
 template <typename T = double>
 class TableHandler {
     struct Object {
+       private:
         unsigned           refCount;
         NodeTableEntity<T> entity;
 
+        friend class TableHandler<T>;
+
+       public:
         explicit Object(size_t n) : refCount(1), entity(n) {}
 
         explicit Object(const NodeTableEntity<T>& _entity)
