@@ -183,7 +183,7 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
      * Gets the level of the root node.
      * @return the level of root ZDD variable.
      */
-    [[nodiscard]] int topLevel() const { return root_.row(); }
+    [[nodiscard]] size_t topLevel() const { return root_.row(); }
 
     /**
      * Gets the number of nonterminal nodes.
