@@ -23,4 +23,9 @@ set(headers
 
 set(test_sources
   src/tmp_test.cpp
+  src/example1.cpp
+  src/example2.cpp
+  src/test.cpp
+  src/testRandomDd.cpp
+  src/testSizeConstraint.cpp
 )

@@ -115,29 +115,6 @@ verbose_message("Applied compiler warnings. Using standard ${CMAKE_CXX_STANDARD}
 
 include(cmake/Doxygen.cmake)
 
-#
-# Model project dependencies
-#
-
-# Identify and link with the specific "packages" the project uses
-#find_package(package_name package_version REQUIRED package_type [other_options])
-#target_link_libraries(
-#  ${PROJECT_NAME}
-#  PUBLIC
-#    dependency1 ...
-#  PRIVATE
-#    dependency2 ...
-#    ${PROJECT_NAME}_PROJECT_OPTIONS
-#    ${PROJECT_NAME}_PROJECT_WARNINGS
-#)
-#if(${PROJECT_NAME}_BUILD_EXECUTABLE AND ${PROJECT_NAME}_ENABLE_UNIT_TESTING)
-#  target_link_libraries(
-#    ${PROJECT_NAME}_LIB
-#    PUBLIC
-#      dependency1 ...
-#  )
-#endif()
-
 # For Windows, it is necessary to link with the MultiThreaded library.
 # Depending on how the rest of the project's dependencies are linked, it might be necessary
 # to change the line to statically link with the library.
@@ -163,6 +140,9 @@ if(${PROJECT_NAME}_BUILD_HEADERS_ONLY)
     INTERFACE
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    ${CONAN_INCLUDE_DIRS_FMT}
+    ${CONAN_INCLUDE_DIRS_RANGE-V3}
+    ${CONAN_INCLUDE_DIRS_BOOST}
   )
 else()
   target_include_directories(
@@ -320,8 +300,8 @@ write_basic_package_version_file(
 # # Unit testing setup
 # #
 
-# if(${PROJECT_NAME}_ENABLE_UNIT_TESTING)
-#   enable_testing()
-#   message(STATUS "Build unit tests for the project. Tests should always be found in the test folder\n")
-#   add_subdirectory(test)
-# endif()
+if(${PROJECT_NAME}_ENABLE_UNIT_TESTING)
+  enable_testing()
+  message(STATUS "Build unit tests for the project. Tests should always be found in the test folder\n")
+  add_subdirectory(test)
+endif()
