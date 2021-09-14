@@ -20,7 +20,7 @@ include(cmake/Utils.cmake)
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif()
-message(STATUS "Started CMake for ${PROJECT_NAME} v${PROJECT_VERSION}...\n")
+message(STATUS "Started CMake for ${PROJECT_NAME} v${PROJECT_VERSION}...")
 
 #
 # Setup alternative names
@@ -39,7 +39,7 @@ endif()
 #
 
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
-  message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there.\n")
+  message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there.")
 endif()
 
 #
@@ -89,7 +89,7 @@ if(${PROJECT_NAME}_BUILD_EXECUTABLE AND ${PROJECT_NAME}_ENABLE_UNIT_TESTING)
   )
 endif()
 
-message(STATUS "Added all header and implementation files.\n")
+message(STATUS "Added all header and implementation files.")
 
 #
 # Set the project standard and warnings
@@ -107,7 +107,7 @@ endif()
 include(cmake/CompilerWarnings.cmake)
 set_project_warnings(${PROJECT_NAME})
 
-verbose_message("Applied compiler warnings. Using standard ${CMAKE_CXX_STANDARD}.\n")
+verbose_message("Applied compiler warnings. Using standard ${CXX_STANDARD}.")
 
 #
 # Enable Doxygen
@@ -177,7 +177,7 @@ else()
   add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 endif()
 
-verbose_message("Project is now aliased as ${PROJECT_NAME}::${PROJECT_NAME}.\n")
+verbose_message("Project is now aliased as ${PROJECT_NAME}::${PROJECT_NAME}.")
 
 #
 # Format the project using the `clang-format` target (i.e: cmake --build build --target clang-format)
@@ -294,7 +294,7 @@ write_basic_package_version_file(
 #   message(STATUS "Generated the export header `${PROJECT_NAME_LOWERCASE}_export.h` and installed it.")
 # endif()
 
-# message(STATUS "Finished building requirements for installing the package.\n")
+# message(STATUS "Finished building requirements for installing the package.")
 
 # #
 # # Unit testing setup
@@ -302,6 +302,6 @@ write_basic_package_version_file(
 
 if(${PROJECT_NAME}_ENABLE_UNIT_TESTING)
   enable_testing()
-  message(STATUS "Build unit tests for the project. Tests should always be found in the test folder\n")
+  message(STATUS "Build unit tests for the project. Tests should always be found in the test folder.")
   add_subdirectory(test)
 endif()
