@@ -30,7 +30,7 @@
 /**
  * @brief Base class of the evaluators
  * Every derived class needs an implementation of the following functions:
- * - void initializenode(T&)
+ * - void initialize_node(T&)
  * - void initializerootnode(T&)
  * - void evalNode(T&)
  * - R get_objective(T&)
@@ -50,7 +50,7 @@ class Eval {
      *
      * @param n Node at which we initialize
      */
-    virtual void initializenode(T& n) const = 0;
+    virtual void initialize_node(T& n) const = 0;
 
     /**
      * @brief Initialization of the root node

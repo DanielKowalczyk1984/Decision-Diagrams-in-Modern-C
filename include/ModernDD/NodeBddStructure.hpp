@@ -349,7 +349,7 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
         evaluator.initializerootnode(work.node(1));
         for (auto& it : work | ranges::views::take(n + 1) |
                             ranges::views::drop(1) | ranges::views::join) {
-            evaluator.initializenode(it);
+            evaluator.initialize_node(it);
             evaluator.evalNode(it);
         }
 
@@ -371,7 +371,7 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
         // for (int i = 1; i <= n; ++i) {
         for (auto& it : work | ranges::views::take(n + 1) |
                             ranges::views::drop(1) | ranges::views::join) {
-            evaluator.initializenode(it);
+            evaluator.initialize_node(it);
             evaluator.evalNode(it);
         }
         // }
@@ -396,7 +396,7 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
         // for (int i = n - 1; i >= 0; i--) {
         for (auto& it : work | ranges::views::take(n) | ranges::views::reverse |
                             ranges::views::join) {
-            evaluator.initializenode(it);
+            evaluator.initialize_node(it);
         }
         // }
 
@@ -434,7 +434,7 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
         evaluator.initializerootnode(work.node(root()));
         for (auto& it : work | ranges::views::take(n) | ranges::views::reverse |
                             ranges::views::join) {
-            evaluator.initializenode(it);
+            evaluator.initialize_node(it);
         }
 
         /**
