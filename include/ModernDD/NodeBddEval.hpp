@@ -43,8 +43,6 @@ class Eval {
     NodeTableEntity<T>* table;
 
    public:
-    [[nodiscard]] virtual bool showMessages() const { return false; }
-
     /**
      * @brief Initialization of the node before evaluation.
      *
@@ -57,7 +55,7 @@ class Eval {
      *
      * @param n Root node of the decision diagram
      */
-    virtual void initializerootnode(T& n) const = 0;
+    virtual void initialize_root_node(T& n) const = 0;
 
     /**
      * @brief Evaluate the node

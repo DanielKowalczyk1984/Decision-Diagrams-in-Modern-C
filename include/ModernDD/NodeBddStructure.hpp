@@ -346,7 +346,7 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
             return retval;
         }
 
-        evaluator.initializerootnode(work.node(1));
+        evaluator.initialize_root_node(work.node(1));
         for (auto& it : work | ranges::views::take(n + 1) |
                             ranges::views::drop(1) | ranges::views::join) {
             evaluator.initialize_node(it);
@@ -367,7 +367,7 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
             return;
         }
 
-        evaluator.initializerootnode(work.node(1));
+        evaluator.initialize_root_node(work.node(1));
         // for (int i = 1; i <= n; ++i) {
         for (auto& it : work | ranges::views::take(n + 1) |
                             ranges::views::drop(1) | ranges::views::join) {
@@ -392,7 +392,7 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
         /**
          * Initialize nodes of the DD
          */
-        evaluator.initializerootnode(work.node(root()));
+        evaluator.initialize_root_node(work.node(root()));
         // for (int i = n - 1; i >= 0; i--) {
         for (auto& it : work | ranges::views::take(n) | ranges::views::reverse |
                             ranges::views::join) {
@@ -431,7 +431,7 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
         /**
          * Initialize nodes of the DD
          */
-        evaluator.initializerootnode(work.node(root()));
+        evaluator.initialize_root_node(work.node(root()));
         for (auto& it : work | ranges::views::take(n) | ranges::views::reverse |
                             ranges::views::join) {
             evaluator.initialize_node(it);
@@ -527,7 +527,7 @@ class DdStructure : public DdSpec<DdStructure<T>, NodeId> {
                     auto&       sel = path[cursor];
                     auto const& ss =
                         (*dd.diagram)[sel.first.row()][sel.first.col()];
-                    if (sel.second == false && ss[1] != 0) {
+                    if (!sel.second && ss[1] != 0) {
                         f = sel.first;
                         sel.second = true;
                         path.resize(cursor + 1);
