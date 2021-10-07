@@ -157,7 +157,8 @@ class NodeTableEntity : public data_table_node<T> {
      * @param f node ID.
      * @return node @p f.
      */
-    T& node(NodeId f) { return (*this)[f.row()][f.col()]; }
+//    T& node(NodeId f) { return (*this)[f.row()][f.col()]; }
+    T& node(const NodeId& f) {return (*this)[f.row()][f.col()] ;}
 
     T* node_ptr(NodeId f) { return &(*this)[f.row()][f.col()]; }
 
